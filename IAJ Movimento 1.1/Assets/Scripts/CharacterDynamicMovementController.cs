@@ -76,7 +76,12 @@ public class CharacterDynamicMovementController : MonoBehaviour {
         else if (Input.GetKeyDown(arriveKey))
         {
             this.debugTarget.SetActive(false);
-            //TODO implement DynamicArrive and initialize it here
+            this.character.Movement = new DynamicArrive
+            {
+                Character = this.character.KinematicData,
+                Target = this.targetCharacter.KinematicData,
+                MaxSpeed = MAX_SPEED
+            };
             
         }
         else if (Input.GetKeyDown(wanderKey))
@@ -106,6 +111,15 @@ public class CharacterDynamicMovementController : MonoBehaviour {
             {
                 Gizmos.color = Color.blue;
                 Gizmos.DrawWireSphere(wander.CircleCenter, wander.WanderRadius);
+            }
+            var arrive = this.character.Movement as DynamicArrive;
+            if (arrive != null)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(arrive.Character.Position, arrive.StopRadius);
+
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(arrive.Character.Position, arrive.SlowRadius);
             }
         }
     }

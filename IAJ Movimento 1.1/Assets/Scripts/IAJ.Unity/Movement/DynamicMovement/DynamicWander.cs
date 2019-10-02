@@ -31,8 +31,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
-            //TODO implement Dynamic Wander movement
-
+            this.WanderAngle += RandomHelper.RandomBinomial() * this.WanderRate;
+            float TargetOrientation = this.WanderAngle + this.Character.Orientation;
+            this.CircleCenter = this.Character.Position + this.WanderOffset * MathHelper.ConvertOrientationToVector(this.Character.Orientation);
+            base.Target.Position = this.CircleCenter + WanderRadius * MathHelper.ConvertOrientationToVector(TargetOrientation);
             if(this.DebugTarget != null)
             {
                 this.DebugTarget.transform.position = this.Target.Position;
