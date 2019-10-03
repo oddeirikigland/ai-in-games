@@ -79,7 +79,7 @@ public class CharacterDynamicMovementController : MonoBehaviour {
             this.character.Movement = new DynamicArrive
             {
                 Character = this.character.KinematicData,
-                Target = this.targetCharacter.KinematicData,
+                DestinationTarget = this.targetCharacter.KinematicData,
                 MaxSpeed = MAX_SPEED
             };
             

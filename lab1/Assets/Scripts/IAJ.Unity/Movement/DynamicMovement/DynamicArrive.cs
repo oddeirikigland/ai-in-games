@@ -8,6 +8,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public float StopRadius { get; set; }
         public float SlowRadius { get; set; }
         public float MaxSpeed { get; set; }
+        public KinematicData DestinationTarget { get; set; }
 
         public override string Name
         {
@@ -16,14 +17,14 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public DynamicArrive()
         {
-            this.Output = new MovementOutput();
             this.StopRadius = 2f;
-            this.SlowRadius = this.StopRadius * 2f;
+            this.SlowRadius = this.StopRadius * 4f;
+            this.Target = new KinematicData();
         }
 
         public override MovementOutput GetMovement()
         {
-            Vector3 direction = this.Target.Position - this.Character.Position;
+            Vector3 direction = this.DestinationTarget.Position - this.Character.Position;
             float distance = direction.magnitude;
             float desiredSpeed;
 
@@ -34,7 +35,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             } else {
                 desiredSpeed = this.MaxSpeed * (distance / this.SlowRadius);
             }
-            base.Character.velocity = direction.normalized * desiredSpeed;
+            base.Target.velocity = direction.normalized * desiredSpeed;
             return base.GetMovement(); 
         }
     }
