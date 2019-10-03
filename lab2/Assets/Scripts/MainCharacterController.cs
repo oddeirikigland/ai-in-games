@@ -60,17 +60,16 @@ public class MainCharacterController : MonoBehaviour {
     {
         foreach (var obstacle in obstacles)
         {
-            //TODO: add your AvoidObstacle movement here
-            //var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
-            //{
-            //    MaxAcceleration = MAX_ACCELERATION,
-            //    AvoidMargin = AVOID_MARGIN,
-            //    MaxLookAhead = MAX_LOOK_AHEAD,
-            //    Character = this.character.KinematicData,
-            //    DebugColor = Color.magenta
-            //};
-            //this.blendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, 2.0f));
-            //this.priorityMovement.Movements.Add(avoidObstacleMovement);
+            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
+            {
+                MaxAcceleration = MAX_ACCELERATION,
+                AvoidMargin = AVOID_MARGIN,
+                MaxLookAhead = MAX_LOOK_AHEAD,
+                Character = this.character.KinematicData,
+                DebugColor = Color.magenta
+            };
+            this.blendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, 2.0f));
+            this.priorityMovement.Movements.Add(avoidObstacleMovement);
         }
 
         foreach (var otherCharacter in characters)
@@ -97,6 +96,7 @@ public class MainCharacterController : MonoBehaviour {
         {
             Character = this.character.KinematicData,
             MaxAcceleration = MAX_ACCELERATION,
+            MaxSpeed = MAX_SPEED,
             DebugColor = Color.yellow
         };
 
