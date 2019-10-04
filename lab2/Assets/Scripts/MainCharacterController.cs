@@ -146,7 +146,7 @@ public class MainCharacterController : MonoBehaviour {
             if (rvo != null)
             {
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(rvo.Character.Position, rvo.CharacterSize);
+                Gizmos.DrawWireSphere(rvo.Character.Position, rvo.IgnoreDistance);
             }
         }
     }

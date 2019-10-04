@@ -33,9 +33,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.VO
             this.Characters = movingCharacters;
             this.Obstacles = obstacles;
             base.Target = new KinematicData();
-            this.NumSamples = 5;
-            this.CharacterSize = 2.5f;
+            this.NumSamples = 100;
+            this.CharacterSize = 2f;
             this.ImportanceAvoidCollision = 8f;
+            this.IgnoreDistance = 5f;
         }
         
         protected Vector3 GetBestSample(Vector3 desiredVelocity, List<Vector3> samples)
@@ -47,8 +48,33 @@ namespace Assets.Scripts.IAJ.Unity.Movement.VO
             {
                 float distancePenalty = (desiredVelocity - sample).magnitude;
                 double maximumPenalty = 0;
+                foreach (StaticData b in this.Obstacles)
+                {
+                    Vector3 deltaP = b.Position - this.Character.Position;
+                    if (deltaP.magnitude > this.IgnoreDistance * 2) continue;
+                    Vector3 rayVector = sample - this.Character.velocity;
+                    float tc = MathHelper.TimeToCollisionBetweenRayAndCircle(this.Character.Position, rayVector, b.Position, this.CharacterSize);
+                    if (tc > 0)
+                    {
+                        timePenalty = this.ImportanceAvoidCollision * 10 / tc;
+                    }
+                    else if (tc == 0)
+                    {
+                        timePenalty = double.PositiveInfinity;
+                    }
+                    else
+                    {
+                        timePenalty = 0;
+                    }
+
+                    if (timePenalty > maximumPenalty)
+                    {
+                        maximumPenalty = timePenalty;
+                    }
+                }
                 foreach (KinematicData b in this.Characters)
                 {
+                    if (this.Character.Position.Equals(b.Position)) continue;
                     Vector3 deltaP = b.Position - this.Character.Position;
                     if (deltaP.magnitude > this.IgnoreDistance) continue;
                     Vector3 rayVector = 2 * sample - this.Character.velocity - b.velocity;
