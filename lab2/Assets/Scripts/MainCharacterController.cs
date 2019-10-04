@@ -140,6 +140,15 @@ public class MainCharacterController : MonoBehaviour {
 
     void OnDrawGizmos()
     {
+        if (this.character != null && this.character.Movement != null)
+        {
+            var rvo = this.character.Movement as RVOMovement;
+            if (rvo != null)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(rvo.Character.Position, rvo.CharacterSize);
+            }
+        }
     }
 
     private void UpdateMovingGameObject()
