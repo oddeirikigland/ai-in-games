@@ -44,8 +44,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.VO
             Vector3 bestSample = Vector3.zero;
             double minimumPenalty = double.PositiveInfinity;
             double timePenalty;
+            int threshold = 4;
             foreach (Vector3 sample in samples)
             {
+                int counter = 0;
                 float distancePenalty = (desiredVelocity - sample).magnitude;
                 double maximumPenalty = 0;
                 foreach (StaticData b in this.Obstacles)
@@ -70,6 +72,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.VO
                     if (timePenalty > maximumPenalty)
                     {
                         maximumPenalty = timePenalty;
+                        if (counter > threshold) break;
+                        counter++;
                     }
                 }
                 foreach (KinematicData b in this.Characters)
@@ -95,6 +99,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.VO
                     if (timePenalty > maximumPenalty)
                     {
                         maximumPenalty = timePenalty;
+                        if (counter > threshold) break;
+                        counter++;
                     }
                 }
                 double penalty = distancePenalty + maximumPenalty;
