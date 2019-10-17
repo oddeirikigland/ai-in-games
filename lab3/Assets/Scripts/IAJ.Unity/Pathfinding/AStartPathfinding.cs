@@ -59,7 +59,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
             this.InProgress = true;
             this.TotalExploredNodes = 0;
-            this.TotalProcessingTime = 0.0f;
+            this.TotalProcessingTime = Time.time;
             this.MaxOpenNodes = 0;
 
             var initialNode = new NodeRecord
@@ -71,29 +71,63 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
             initialNode.fValue = AStarPathfinding.F(initialNode);
 
-            this.Open.Initialize(); 
+            this.Open.Initialize();
             this.Open.AddToOpen(initialNode);
             this.Closed.Initialize();
         }
 
         protected virtual void ProcessChildNode(NodeRecord parentNode, NavigationGraphEdge connectionEdge, int edgeIndex)
         {
-            //this is where you process a child node 
             var childNode = GenerateChildNodeRecord(parentNode, connectionEdge);
-            //TODO: implement the rest of the code here
+            NodeRecord nodeInOpen = this.Open.SearchInOpen(childNode);
+            NodeRecord nodeInClose = this.Closed.SearchInClosed(childNode);
+            if (nodeInOpen is null && nodeInClose is null)
+            {
+                this.Open.AddToOpen(childNode);
+            }
+            else if (nodeInOpen != null && childNode.fValue < nodeInOpen.fValue)
+            {
+                this.Open.Replace(nodeInOpen, childNode);
+            }
+            else if (nodeInClose != null && childNode.fValue < nodeInClose.fValue)
+            {
+                this.Closed.RemoveFromClosed(nodeInClose);
+                this.Open.AddToOpen(childNode);
+            }
+            this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());
         }
 
         public bool Search(out GlobalPath solution, bool returnPartialSolution = false)
         {
-			//TODO: implement this
-			//to determine the connections of the selected nodeRecord you need to look at the NavigationGraphNode' EdgeOut  list
-			//something like this
-			//var outConnections = bestNode.node.OutEdgeCount;
-			//for (int i = 0; i < outConnections; i++)
-			//{
-			//this.ProcessChildNode(bestNode, bestNode.node.EdgeOut(i));
-			solution = null;
-			return true;
+            //to determine the connections of the selected nodeRecord you need to look at the NavigationGraphNode' EdgeOut  list
+            solution = null;
+            if (this.Open.CountOpen() == 0)
+            {
+                return false;
+            }
+
+            // pop from open list with lowest f value, which is best node
+            NodeRecord bestNode = this.Open.GetBestAndRemove();
+            this.TotalExploredNodes++;
+            if (bestNode.node == this.GoalNode)
+            {
+                solution = this.CalculateSolution(bestNode, returnPartialSolution);
+                this.TotalProcessingTime = Time.time - this.TotalProcessingTime;
+                return true;
+            }
+            this.Closed.AddToClosed(bestNode);
+
+            var outConnections = bestNode.node.OutEdgeCount;
+            for (int i = 0; i < outConnections; i++)
+            {
+                // every neighbour of bestNode
+
+                // TODO: if goal bounding, check if node to goal in goal box, if not take next neighbour
+
+                // ProcessChildNode finds g, f and H value
+			    this.ProcessChildNode(bestNode, bestNode.node.EdgeOut(i), i);                
+            }
+			return false;
         }
 
         protected NavigationGraphNode Quantize(Vector3 position)
