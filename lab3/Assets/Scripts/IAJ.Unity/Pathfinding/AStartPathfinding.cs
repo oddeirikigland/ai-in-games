@@ -207,7 +207,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
         public static float F(float g, float h)
         {
-            return g + h;
+            float p = 0.01f;
+            return g + (1 + p) * h;
         }
 
     }
