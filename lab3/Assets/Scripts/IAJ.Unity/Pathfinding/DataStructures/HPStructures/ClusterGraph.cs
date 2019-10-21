@@ -24,6 +24,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
             throw new NotImplementedException();
         }
 
+        public int CountGateways()
+        {
+            return this.gateways.Count;
+        }
+
         public void SaveToAssetDatabase()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);

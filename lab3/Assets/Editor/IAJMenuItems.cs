@@ -59,13 +59,47 @@ public class IAJMenuItems  {
 
         GlobalPath solution = null;
         float cost;
-        Gateway startGate;
-        Gateway endGate;
-
-         var pathfindingManager = new PathfindingManager();
+        
+        var pathfindingManager = new PathfindingManager();
         pathfindingManager.Initialize(navMesh, new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic()));
 
         //TODO implement the rest of the algorithm here, i.e. build the GatewayDistanceTable
+        clusterGraph.gatewayDistanceTable = new GatewayDistanceTableRow[clusterGraph.CountGateways()];
+
+        foreach (Gateway startGate in clusterGraph.gateways)
+        {
+            Vector3 startGatePosition = startGate.Localize();
+            GatewayDistanceTableRow startGateToOthers = new GatewayDistanceTableRow();
+            startGateToOthers.entries = new GatewayDistanceTableEntry[clusterGraph.CountGateways()];
+            foreach (Gateway endGate in clusterGraph.gateways)
+            {
+                Vector3 endGatePosition = endGate.Localize();
+                GatewayDistanceTableEntry cell = new GatewayDistanceTableEntry();
+                cell.startGatewayPosition = startGatePosition;
+                cell.endGatewayPosition = endGatePosition;
+
+                if (startGatePosition == endGatePosition)
+                {
+                    cost = 0;
+                }
+                else
+                {
+                    pathfindingManager.AStarPathFinding.InitializePathfindingSearch(startGatePosition, endGatePosition);
+                    while (pathfindingManager.AStarPathFinding.InProgress)
+                    {
+                        var finished = pathfindingManager.AStarPathFinding.Search(out solution);
+                        if (finished)
+                        {
+                            pathfindingManager.AStarPathFinding.InProgress = false;
+                        }
+                    }
+                    cost = solution.Length;
+                }
+                cell.shortestDistance = cost;
+                startGateToOthers.entries[endGate.id] = cell;
+            }
+            clusterGraph.gatewayDistanceTable[startGate.id] = startGateToOthers;
+        }
 
         //create a new asset that will contain the ClusterGraph and save it to disk (DO NOT REMOVE THIS LINE)
         clusterGraph.SaveToAssetDatabase();
