@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics
 {
-    public class EuclideanHeuristic : IHeuristic
+    public class EuclideanDistanceHeuristic : IHeuristic
     {
         public float H(NavigationGraphNode node, NavigationGraphNode goalNode)
         {
