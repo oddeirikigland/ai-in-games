@@ -1,4 +1,5 @@
-﻿using RAIN.Navigation.Graph;
+﻿using Assets.Scripts.IAJ.Unity.Utils;
+using RAIN.Navigation.Graph;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -20,8 +21,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
 
         public Cluster Quantize(NavigationGraphNode node)
         {
-            //TODO implement this
-            throw new NotImplementedException();
+            foreach (Cluster cluster in this.clusters)
+            {
+                if (MathHelper.PointInsideBoundingBox(node.Position, cluster.min, cluster.max)) return cluster;
+            }
+            return null;
         }
 
         public int CountGateways()
