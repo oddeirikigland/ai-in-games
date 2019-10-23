@@ -42,9 +42,22 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
-            //TODO: implement the rest of your code here
+           /* if (childNodeRecord.status == NodeStatus.Unvisited)
+            {
+                this.Open.AddToOpen(childNode);
+            }
+            else if (childNodeRecord.status == NodeStatus.Open && childNode.fValue < this.Open.SearchInOpen(childNode).fValue)
+            {
+                this.Open.Replace(, childNode);
+            }
+            else if (nodeInClose != null && childNode.fValue < nodeInClose.fValue)
+            {
+                this.Closed.RemoveFromClosed(nodeInClose);
+                this.Open.AddToOpen(childNode);
+            }
+            this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());*/
         }
-            
+
         private List<NavigationGraphNode> GetNodesHack(NavMeshPathGraph graph)
         {
             //this hack is needed because in order to implement NodeArrayA* you need to have full acess to all the nodes in the navigation graph in the beginning of the search

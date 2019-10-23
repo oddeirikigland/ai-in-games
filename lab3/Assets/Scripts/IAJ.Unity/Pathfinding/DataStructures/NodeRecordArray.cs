@@ -73,7 +73,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         public void AddToOpen(NodeRecord nodeRecord)
         {
-            //TODO implement
+            this.Open.AddToOpen(nodeRecord);
             throw new NotImplementedException();
         }
 
@@ -85,7 +85,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         public NodeRecord SearchInOpen(NodeRecord nodeRecord)
         {
-            //TODO implement
+            return this.Open.SearchInOpen(nodeRecord);
             throw new NotImplementedException();
         }
 
@@ -97,25 +97,26 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         public NodeRecord GetBestAndRemove()
         {
-            //TODO implement
+            NodeRecord Best = this.Open.PeekBest();
+            this.Open.RemoveFromOpen(Best);
             throw new NotImplementedException();
         }
 
         public NodeRecord PeekBest()
         {
-            //TODO implement
+            return this.Open.PeekBest();
             throw new NotImplementedException();
         }
 
         public void Replace(NodeRecord nodeToBeReplaced, NodeRecord nodeToReplace)
         {
-            //TODO implement
+            this.Open.Replace(nodeToBeReplaced, nodeToReplace);
             throw new NotImplementedException();
         }
 
         public void RemoveFromOpen(NodeRecord nodeRecord)
         {
-            //TODO implement
+            this.Open.RemoveFromOpen(nodeRecord);
             throw new NotImplementedException();
         }
 
@@ -127,8 +128,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         ICollection<NodeRecord> IOpenSet.All()
         {
-            //TODO implement
-            throw new NotImplementedException();
+/*            return this.Open;
+*/            throw new NotImplementedException();
         }
 
         ICollection<NodeRecord> IClosedSet.All()
@@ -139,7 +140,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         public int CountOpen()
         {
-            //TODO implement
+            return this.Open.CountOpen();
             throw new NotImplementedException();
         }
     }
