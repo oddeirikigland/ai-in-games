@@ -48,7 +48,6 @@ public class DynamicFollowPath : DynamicSeek
 		};
 		var targetParam = currentParam + pathOffset;
 		base.Target.Position = path.GetPosition(targetParam);
-		Debug.Log(currentParam);
 		return base.GetMovement();
 	}
 }
