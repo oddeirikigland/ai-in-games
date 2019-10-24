@@ -183,6 +183,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             if (!partial && currentNode.parent != null)
             {
                 currentNode = currentNode.parent;
+				path.LocalPaths.Add(new LineSegmentPath(currentNode.node.LocalPosition, GoalPosition));
             }
             
             while (currentNode.parent != null)
@@ -190,12 +191,19 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 path.PathNodes.Add(currentNode.node); //we need to reverse the list because this operator add elements to the end of the list
                 path.PathPositions.Add(currentNode.node.LocalPosition);
 
-                if (currentNode.parent.parent == null) break; //this skips the first node
+				if (currentNode.parent.parent == null)
+				{
+					path.LocalPaths.Add(new LineSegmentPath(StartPosition, currentNode.node.LocalPosition));
+					break; //this skips the first node
+				}
+
+				path.LocalPaths.Add(new LineSegmentPath(currentNode.parent.node.LocalPosition, currentNode.node.LocalPosition));
                 currentNode = currentNode.parent;
             }
 
             path.PathNodes.Reverse();
             path.PathPositions.Reverse();
+			path.LocalPaths.Reverse();
             return path;
 
         }

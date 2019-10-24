@@ -14,7 +14,6 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public float Length { get; set; }
         public List<LocalPath> LocalPaths { get; protected set; } 
 
-
         public GlobalPath()
         {
             this.PathNodes = new List<NavigationGraphNode>();
@@ -22,24 +21,29 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
             this.LocalPaths = new List<LocalPath>();
         }
 
-        
-
         public override float GetParam(Vector3 position, float previousParam)
         {
-			//TODO: implement latter
-			throw new NotImplementedException();
+			//TODO: done
+			return Math.Min(
+				Math.Max(
+					Mathf.FloorToInt(previousParam) + LocalPaths[Math.Min(
+						Mathf.FloorToInt(previousParam), 
+						LocalPaths.Count - 1)]
+					.GetParam(position, previousParam),
+					previousParam), 
+				LocalPaths.Count);
         }
 
         public override Vector3 GetPosition(float param)
         {
-			//TODO: implement latter
-			throw new NotImplementedException();
+			//TODO: done
+			return LocalPaths[Math.Min(Mathf.FloorToInt(param), LocalPaths.Count - 1)].GetPosition(param);
         }
 
         public override bool PathEnd(float param)
         {
-			//TODO: implement latter
-			throw new NotImplementedException();
+			//TODO: done
+			return (Mathf.FloorToInt(param) > LocalPaths.Count - 1) || (Mathf.FloorToInt(param) == LocalPaths.Count - 1) && LocalPaths[LocalPaths.Count - 1].PathEnd(param);
         }
     }
 }
