@@ -24,7 +24,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             this.KinematicData = new KinematicData(new StaticData(gameObject.transform));
             this.GameObject = gameObject;
             this.Drag = 1;
-            this.MaxSpeed = 3.0f;
+            this.MaxSpeed = 5.0f;
         }
 	
         // Update is called once per frame

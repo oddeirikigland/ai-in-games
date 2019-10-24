@@ -124,7 +124,7 @@ public class PathfindingManager : MonoBehaviour {
 				this.dynamicCharacter.Movement = new DynamicFollowPath()
 				{
 					Path = this.currentSolution,
-					MaxAcceleration = 1.0f,
+					MaxAcceleration = 2.0f,
 				};
             }
 	    }
