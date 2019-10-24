@@ -51,7 +51,7 @@ public class PathfindingManager : MonoBehaviour {
 	{
         this.currentClickNumber = 1;
          
-		this.Initialize(NavigationManager.Instance.NavMeshGraphs[0], new NodeArrayAStarPathFinding(NavigationManager.Instance.NavMeshGraphs[0], new EuclideanDistanceHeuristic()));
+		this.Initialize(NavigationManager.Instance.NavMeshGraphs[0], new NodeArrayAStarPathFinding(NavigationManager.Instance.NavMeshGraphs[0], new GatewayDistanceHeuristic()));
 
 		this.dynamicCharacter = new DynamicCharacter(this.character);
     }
