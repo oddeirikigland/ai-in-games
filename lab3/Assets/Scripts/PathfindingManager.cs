@@ -7,6 +7,7 @@ using RAIN.Navigation.NavMesh;
 using RAIN.Navigation.Graph;
 using UnityEditor;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
+using Assets.Scripts.IAJ.Unity.Movement.DynamicMovement;
 
 public class PathfindingManager : MonoBehaviour {
 
@@ -20,6 +21,9 @@ public class PathfindingManager : MonoBehaviour {
     public GameObject p4;
     public GameObject p5;
     public GameObject p6;
+	public GameObject character;
+
+	private DynamicCharacter dynamicCharacter;
 
 	//private fields for internal use only
 	private Vector3 startPosition;
@@ -48,6 +52,8 @@ public class PathfindingManager : MonoBehaviour {
         this.currentClickNumber = 1;
          
 		this.Initialize(NavigationManager.Instance.NavMeshGraphs[0], new AStarPathfinding(NavigationManager.Instance.NavMeshGraphs[0], new NodePriorityHeap(), new ClosedListHashmap(), new GatewayDistanceHeuristic()));
+
+		this.dynamicCharacter = new DynamicCharacter(this.character);
     }
 
     // Update is called once per frame
@@ -115,8 +121,15 @@ public class PathfindingManager : MonoBehaviour {
             if(finished)
             {
                 this.AStarPathFinding.InProgress = false;
+				this.dynamicCharacter.Movement = new DynamicFollowPath()
+				{
+					Path = this.currentSolution,
+					MaxAcceleration = 1.0f,
+				};
             }
 	    }
+
+		this.dynamicCharacter.Update();
 	}
 
     public void OnGUI()
@@ -219,5 +232,8 @@ public class PathfindingManager : MonoBehaviour {
         this.draw = true;
 
         this.AStarPathFinding.InitializePathfindingSearch(this.startPosition, this.endPosition);
+
+		this.character.transform.position = this.startPosition;
+		this.dynamicCharacter.Movement = null;
     }
 }
