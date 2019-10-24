@@ -3,6 +3,7 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using RAIN.Navigation.Graph;
 using RAIN.Navigation.NavMesh;
+using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding
 {
@@ -20,9 +21,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
         protected override void ProcessChildNode(NodeRecord bestNode, NavigationGraphEdge connectionEdge, int edgeIndex)
         {
-            float f;
             float g;
             float h;
+            float f;
 
             var childNode = connectionEdge.ToNode;
             var childNodeRecord = this.NodeRecordArray.GetNodeRecord(childNode);
@@ -42,9 +43,46 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
-            //TODO: implement the rest of your code here
+            /* Here we calculate the cost so far, the heuristic value and the f value */
+            g = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
+            h = base.Heuristic.H(childNode, this.GoalNode);
+            f = AStarPathfinding.F(g, h);
+
+            /* Set values of first node */
+            if (childNodeRecord.status == NodeStatus.Unvisited)
+            {
+                // Set values of child node
+                childNodeRecord.gValue = g;
+                childNodeRecord.hValue = h;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
+                this.Open.AddToOpen(childNodeRecord);
+            }
+            else if (childNodeRecord.status == NodeStatus.Open &&  f < childNodeRecord.fValue)
+            {
+                NodeRecord NodeInOpen = this.Open.SearchInOpen(childNodeRecord);
+
+                childNodeRecord.gValue = g;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
+                this.Open.Replace(NodeInOpen, childNodeRecord);
+            }
+            else if (childNodeRecord.status == NodeStatus.Closed && f < childNodeRecord.fValue)
+            {
+                NodeRecord nodeInClose = this.Closed.SearchInClosed(childNodeRecord);
+
+                childNodeRecord.gValue = g;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
+                this.Closed.RemoveFromClosed(nodeInClose);
+                this.Open.AddToOpen(childNodeRecord);
+            }
+            this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());
         }
-            
+
         private List<NavigationGraphNode> GetNodesHack(NavMeshPathGraph graph)
         {
             //this hack is needed because in order to implement NodeArrayA* you need to have full acess to all the nodes in the navigation graph in the beginning of the search
