@@ -3,6 +3,7 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using RAIN.Navigation.Graph;
 using RAIN.Navigation.NavMesh;
+using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding
 {
@@ -20,9 +21,6 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
         protected override void ProcessChildNode(NodeRecord bestNode, NavigationGraphEdge connectionEdge, int edgeIndex)
         {
-            float f;
-            float g;
-            float h;
 
             var childNode = connectionEdge.ToNode;
             var childNodeRecord = this.NodeRecordArray.GetNodeRecord(childNode);
@@ -42,20 +40,27 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
-           /* if (childNodeRecord.status == NodeStatus.Unvisited)
+            childNodeRecord.gValue = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
+            childNodeRecord.hValue = base.Heuristic.H(childNode, this.GoalNode);
+            childNodeRecord.fValue = AStarPathfinding.F(childNodeRecord);
+            childNodeRecord.parent = bestNode;
+
+            if (childNodeRecord.status == NodeStatus.Unvisited)
             {
-                this.Open.AddToOpen(childNode);
+                this.Open.AddToOpen(childNodeRecord);
             }
-            else if (childNodeRecord.status == NodeStatus.Open && childNode.fValue < this.Open.SearchInOpen(childNode).fValue)
+            else if (childNodeRecord.status == NodeStatus.Open && childNodeRecord.fValue < this.Open.SearchInOpen(childNodeRecord).fValue)
             {
-                this.Open.Replace(, childNode);
+                NodeRecord NodeInOpen = this.Open.SearchInOpen(childNodeRecord);
+                this.Open.Replace(NodeInOpen, childNodeRecord);
             }
-            else if (nodeInClose != null && childNode.fValue < nodeInClose.fValue)
+            else if (childNodeRecord.status == NodeStatus.Closed && childNodeRecord.fValue < this.Closed.SearchInClosed(childNodeRecord).fValue)
             {
+                NodeRecord nodeInClose = this.Closed.SearchInClosed(childNodeRecord);
                 this.Closed.RemoveFromClosed(nodeInClose);
-                this.Open.AddToOpen(childNode);
+                this.Open.AddToOpen(childNodeRecord);
             }
-            this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());*/
+            this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());
         }
 
         private List<NavigationGraphNode> GetNodesHack(NavMeshPathGraph graph)
