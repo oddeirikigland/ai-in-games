@@ -21,6 +21,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
         protected override void ProcessChildNode(NodeRecord bestNode, NavigationGraphEdge connectionEdge, int edgeIndex)
         {
+            float g;
+            float h;
+            float f;
 
             var childNode = connectionEdge.ToNode;
             var childNodeRecord = this.NodeRecordArray.GetNodeRecord(childNode);
@@ -40,23 +43,40 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
-            childNodeRecord.gValue = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
-            childNodeRecord.hValue = base.Heuristic.H(childNode, this.GoalNode);
-            childNodeRecord.fValue = AStarPathfinding.F(childNodeRecord);
-            childNodeRecord.parent = bestNode;
+            /* Here we calculate the cost so far, the heuristic value and the f value */
+            g = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
+            h = base.Heuristic.H(childNode, this.GoalNode);
+            f = AStarPathfinding.F(g, h);
 
+            /* Set values of first node */
             if (childNodeRecord.status == NodeStatus.Unvisited)
             {
+                // Set values of child node
+                childNodeRecord.gValue = g;
+                childNodeRecord.hValue = h;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
                 this.Open.AddToOpen(childNodeRecord);
             }
-            else if (childNodeRecord.status == NodeStatus.Open && childNodeRecord.fValue < this.Open.SearchInOpen(childNodeRecord).fValue)
+            else if (childNodeRecord.status == NodeStatus.Open &&  f < childNodeRecord.fValue)
             {
                 NodeRecord NodeInOpen = this.Open.SearchInOpen(childNodeRecord);
+
+                childNodeRecord.gValue = g;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
                 this.Open.Replace(NodeInOpen, childNodeRecord);
             }
-            else if (childNodeRecord.status == NodeStatus.Closed && childNodeRecord.fValue < this.Closed.SearchInClosed(childNodeRecord).fValue)
+            else if (childNodeRecord.status == NodeStatus.Closed && f < childNodeRecord.fValue)
             {
                 NodeRecord nodeInClose = this.Closed.SearchInClosed(childNodeRecord);
+
+                childNodeRecord.gValue = g;
+                childNodeRecord.fValue = f;
+                childNodeRecord.parent = bestNode;
+
                 this.Closed.RemoveFromClosed(nodeInClose);
                 this.Open.AddToOpen(childNodeRecord);
             }
