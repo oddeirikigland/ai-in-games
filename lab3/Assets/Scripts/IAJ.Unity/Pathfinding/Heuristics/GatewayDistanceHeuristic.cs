@@ -19,10 +19,12 @@ public class GatewayDistanceHeuristic : IHeuristic
 
     public float H(NavigationGraphNode node, NavigationGraphNode goalNode)
     {
-        this.NodeCluster = this.ClusterGraph.Quantize(node);
+        Vector3 nodePosition = node.Position;
+        Vector3 goalNodePosition = goalNode.Position;
+        this.NodeCluster = this.ClusterGraph.Quantize(nodePosition);
         if (this.NodeCluster == null) return float.PositiveInfinity;
 
-        this.GoalNodeCluster = this.ClusterGraph.Quantize(goalNode);
+        this.GoalNodeCluster = this.ClusterGraph.Quantize(goalNodePosition);
         this.DistanceNodeToGoalNode = float.PositiveInfinity;
         float distance;
 
