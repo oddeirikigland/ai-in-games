@@ -61,23 +61,17 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             }
             else if (childNodeRecord.status == NodeStatus.Open &&  f < childNodeRecord.fValue)
             {
-                NodeRecord NodeInOpen = this.Open.SearchInOpen(childNodeRecord);
-
                 childNodeRecord.gValue = g;
                 childNodeRecord.fValue = f;
                 childNodeRecord.parent = bestNode;
 
-                this.Open.Replace(NodeInOpen, childNodeRecord);
             }
             else if (childNodeRecord.status == NodeStatus.Closed && f < childNodeRecord.fValue)
             {
-                NodeRecord nodeInClose = this.Closed.SearchInClosed(childNodeRecord);
-
                 childNodeRecord.gValue = g;
                 childNodeRecord.fValue = f;
                 childNodeRecord.parent = bestNode;
 
-                this.Closed.RemoveFromClosed(nodeInClose);
                 this.Open.AddToOpen(childNodeRecord);
             }
             this.MaxOpenNodes = Mathf.Max(this.MaxOpenNodes, this.Open.CountOpen());
