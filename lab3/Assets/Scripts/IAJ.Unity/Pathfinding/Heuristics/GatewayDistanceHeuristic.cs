@@ -17,10 +17,8 @@ public class GatewayDistanceHeuristic : IHeuristic
         this.EuclideanDistanceHeuristic = new EuclideanDistanceHeuristic(); 
     }
 
-    public float H(NavigationGraphNode node, NavigationGraphNode goalNode)
+    public float H(Vector3 nodePosition, Vector3 goalNodePosition)
     {
-        Vector3 nodePosition = node.Position;
-        Vector3 goalNodePosition = goalNode.Position;
         this.NodeCluster = this.ClusterGraph.Quantize(nodePosition);
         if (this.NodeCluster == null) return float.PositiveInfinity;
 
@@ -30,16 +28,16 @@ public class GatewayDistanceHeuristic : IHeuristic
 
         if (this.NodeCluster.Localize() == this.GoalNodeCluster.Localize())
         {
-            return this.EuclideanDistanceHeuristic.H(node, goalNode);
+            return this.EuclideanDistanceHeuristic.H(nodePosition, goalNodePosition);
         }
 
         foreach (Gateway nodeGateway in this.NodeCluster.gateways)
         {
-            distance = this.EuclideanDistanceHeuristic.H(node, nodeGateway.Localize());
+            distance = this.EuclideanDistanceHeuristic.H(nodePosition, nodeGateway.Localize());
             foreach (Gateway goalNodeGateway in this.GoalNodeCluster.gateways)
             {
                 distance += this.ClusterGraph.gatewayDistanceTable[nodeGateway.id].entries[goalNodeGateway.id].shortestDistance;
-                distance += this.EuclideanDistanceHeuristic.H(goalNode, goalNodeGateway.Localize());
+                distance += this.EuclideanDistanceHeuristic.H(goalNodePosition, goalNodeGateway.Localize());
                 this.DistanceNodeToGoalNode = Mathf.Min(this.DistanceNodeToGoalNode, distance);
             }
         }        

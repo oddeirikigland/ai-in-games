@@ -44,8 +44,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             }
 
             /* Here we calculate the cost so far, the heuristic value and the f value */
-            g = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
-            h = base.Heuristic.H(childNode, this.GoalNode);
+            g = bestNode.gValue + (childNode.Position - bestNode.node.Position).magnitude;
+            h = base.Heuristic.H(childNode.Position, this.GoalNode.Position);
             f = AStarPathfinding.F(g, h);
 
             /* Set values of first node */
