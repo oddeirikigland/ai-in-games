@@ -43,9 +43,10 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
-            /* Here we calculate the cost so far, the heuristic value and the f value */
-            g = bestNode.gValue + (childNode.LocalPosition - bestNode.node.LocalPosition).magnitude;
-            h = base.Heuristic.H(childNode, this.GoalNode);
+			/* Here we calculate the cost so far, the heuristic value and the f value */
+			Vector3 childNodePosition = childNode.Position;
+			g = bestNode.gValue + (childNodePosition - bestNode.node.Position).magnitude;
+            h = base.Heuristic.H(childNodePosition, this.GoalNode.Position);
             f = AStarPathfinding.F(g, h);
 
             /* Set values of first node */

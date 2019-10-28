@@ -65,7 +65,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             var initialNode = new NodeRecord
             {
                 gValue = 0,
-                hValue = this.Heuristic.H(this.StartNode, this.GoalNode),
+                hValue = this.Heuristic.H(this.StartNode.Position, this.GoalNode.Position),
                 node = this.StartNode
             };
 
@@ -157,7 +157,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 node = childNode,
                 parent = parent,
                 gValue = parent.gValue + (childNode.LocalPosition-parent.node.LocalPosition).magnitude,
-                hValue = this.Heuristic.H(childNode, this.GoalNode)
+                hValue = this.Heuristic.H(childNode.Position, this.GoalNode.Position)
             };
 
             childNodeRecord.fValue = F(childNodeRecord);

@@ -5,15 +5,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics
 {
     public class EuclideanDistanceHeuristic : IHeuristic
     {
-        public float H(NavigationGraphNode node, NavigationGraphNode goalNode)
+        public float H(Vector3 nodePosition, Vector3 goalNodePosition)
         {
-            Vector3 delta = goalNode.Position - node.Position;
-            return Mathf.Sqrt(delta.x * delta.x + delta.z * delta.z);
-        }
-
-        public float H(NavigationGraphNode node, Vector3 gatewayPosition)
-        {
-            Vector3 delta = gatewayPosition - node.Position;
+            Vector3 delta = goalNodePosition - nodePosition;
             return Mathf.Sqrt(delta.x * delta.x + delta.z * delta.z);
         }
     }

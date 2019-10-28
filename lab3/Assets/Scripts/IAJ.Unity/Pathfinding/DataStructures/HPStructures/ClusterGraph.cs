@@ -19,11 +19,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
             this.gateways = new List<Gateway>();
         }
 
-        public Cluster Quantize(NavigationGraphNode node)
+        public Cluster Quantize(Vector3 nodePosition)
         {
             foreach (Cluster cluster in this.clusters)
             {
-                if (MathHelper.PointInsideBoundingBox(node.Position, cluster.min, cluster.max)) return cluster;
+                if (MathHelper.PointInsideBoundingBox(nodePosition, cluster.min, cluster.max)) return cluster;
             }
             return null;
         }
