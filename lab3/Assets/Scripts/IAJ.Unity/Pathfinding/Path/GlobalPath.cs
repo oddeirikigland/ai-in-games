@@ -24,20 +24,17 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public override float GetParam(Vector3 position, float previousParam)
         {
 			//TODO: done
-			return Math.Min(
-				Math.Max(
-					Mathf.FloorToInt(previousParam) + LocalPaths[Math.Min(
-						Mathf.FloorToInt(previousParam), 
-						LocalPaths.Count - 1)]
-					.GetParam(position, previousParam),
-					previousParam), 
-				LocalPaths.Count);
+			int previousInt = Mathf.FloorToInt(previousParam);
+			float newParam = previousInt + LocalPaths[Math.Min(previousInt, LocalPaths.Count - 1)].GetParam(position, previousParam);
+			return Math.Min(Math.Max(newParam, previousParam), LocalPaths.Count);
         }
 
         public override Vector3 GetPosition(float param)
         {
 			//TODO: done
-			return LocalPaths[Math.Min(Mathf.FloorToInt(param), LocalPaths.Count - 1)].GetPosition(param);
+			int paramInt = Mathf.FloorToInt(param);
+			if (paramInt > LocalPaths.Count - 1) return LocalPaths[LocalPaths.Count - 1].GetPosition(0.99f);
+			return LocalPaths[paramInt].GetPosition(param);
         }
 
         public override bool PathEnd(float param)
