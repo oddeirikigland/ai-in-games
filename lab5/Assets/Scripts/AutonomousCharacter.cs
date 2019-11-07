@@ -72,7 +72,7 @@ namespace Assets.Scripts
             this.draw = true;
             this.navMesh = navMeshGraph;
             this.AStarPathFinding = pathfindingAlgorithm;
-            this.AStarPathFinding.NodesPerFrame = 100;
+            this.AStarPathFinding.NodesPerFrame = 10000;
 
 			this.characterAnimator = this.GetComponentInChildren<Animator> ();
         }

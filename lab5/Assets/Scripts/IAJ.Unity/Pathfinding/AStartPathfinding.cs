@@ -101,33 +101,36 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         {
             //to determine the connections of the selected nodeRecord you need to look at the NavigationGraphNode' EdgeOut  list
             solution = null;
-            if (this.Open.CountOpen() == 0)
+            while (this.TotalExploredNodes < this.NodesPerFrame)
             {
-                return false;
+                if (this.Open.CountOpen() == 0)
+                {
+                    return false;
+                }
+
+                // pop from open list with lowest f value, which is best node
+                NodeRecord bestNode = this.Open.GetBestAndRemove();
+                this.TotalExploredNodes++;
+                if (bestNode.node == this.GoalNode)
+                {
+                    solution = this.CalculateSolution(bestNode, returnPartialSolution);
+                    this.TotalProcessingTime = Time.time - this.TotalProcessingTime;
+                    return true;
+                }
+                this.Closed.AddToClosed(bestNode);
+
+                var outConnections = bestNode.node.OutEdgeCount;
+                for (int i = 0; i < outConnections; i++)
+                {
+                    // every neighbour of bestNode
+
+                    // TODO: if goal bounding, check if node to goal in goal box, if not take next neighbour
+
+                    // ProcessChildNode finds g, f and H value
+                    this.ProcessChildNode(bestNode, bestNode.node.EdgeOut(i), i);
+                }
             }
-
-            // pop from open list with lowest f value, which is best node
-            NodeRecord bestNode = this.Open.GetBestAndRemove();
-            this.TotalExploredNodes++;
-            if (bestNode.node == this.GoalNode)
-            {
-                solution = this.CalculateSolution(bestNode, returnPartialSolution);
-                this.TotalProcessingTime = Time.time - this.TotalProcessingTime;
-                return true;
-            }
-            this.Closed.AddToClosed(bestNode);
-
-            var outConnections = bestNode.node.OutEdgeCount;
-            for (int i = 0; i < outConnections; i++)
-            {
-                // every neighbour of bestNode
-
-                // TODO: if goal bounding, check if node to goal in goal box, if not take next neighbour
-
-                // ProcessChildNode finds g, f and H value
-			    this.ProcessChildNode(bestNode, bestNode.node.EdgeOut(i), i);                
-            }
-			return false;
+            return false;
         }
 
         protected NavigationGraphNode Quantize(Vector3 position)
