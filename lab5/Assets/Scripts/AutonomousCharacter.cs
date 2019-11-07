@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Path;
-using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
+// using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.GameManager;
 
 namespace Assets.Scripts
@@ -49,7 +49,7 @@ namespace Assets.Scripts
         public Action CurrentAction { get; private set; }
         public DynamicCharacter Character { get; private set; }
         public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
-        //public AStarPathfinding AStarPathFinding;
+        public AStarPathfinding AStarPathFinding;
 
         //private fields for internal use only
         private Vector3 startPosition;
@@ -72,7 +72,7 @@ namespace Assets.Scripts
             this.draw = true;
             this.navMesh = navMeshGraph;
             this.AStarPathFinding = pathfindingAlgorithm;
-            this.AStarPathFinding.NodesPerSearch = 100;
+            this.AStarPathFinding.NodesPerFrame = 100;
 
 			this.characterAnimator = this.GetComponentInChildren<Animator> ();
         }
@@ -86,6 +86,7 @@ namespace Assets.Scripts
 
             //initialize your pathfinding algorithm here!
             //use the best heuristic from Project 2
+            this.Initialize(this.navMesh, new NodeArrayAStarPathFinding(NavigationManager.Instance.NavMeshGraphs[0], new EuclideanDistanceHeuristic()));
 
 
             //initialization of the GOB decision making
@@ -230,7 +231,6 @@ namespace Assets.Scripts
                 {
                     //lets smooth out the Path
                     this.startPosition = this.Character.KinematicData.position;
-					this.currentSmoothedSolution = StringPullingPathSmoothing.SmoothPath(this.Character.KinematicData.position, this.currentSolution);
 					//this.currentSolution.P
 					this.currentSmoothedSolution = this.smoothPath(this.Character.KinematicData.position, this.currentSolution);
                     this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);

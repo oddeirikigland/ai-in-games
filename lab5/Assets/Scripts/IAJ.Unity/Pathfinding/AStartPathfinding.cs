@@ -183,7 +183,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             if (!partial && currentNode.parent != null)
             {
                 currentNode = currentNode.parent;
-				path.LocalPaths.Add(new LineSegmentPath(currentNode.node.LocalPosition, GoalPosition));
+				// path.LocalPaths.Add(new LineSegmentPath(currentNode.node.LocalPosition, GoalPosition));
             }
             
             while (currentNode.parent != null)
@@ -193,11 +193,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
 				if (currentNode.parent.parent == null)
 				{
-					path.LocalPaths.Add(new LineSegmentPath(StartPosition, currentNode.node.LocalPosition));
+					// path.LocalPaths.Add(new LineSegmentPath(StartPosition, currentNode.node.LocalPosition));
 					break; //this skips the first node
 				}
 
-				path.LocalPaths.Add(new LineSegmentPath(currentNode.parent.node.LocalPosition, currentNode.node.LocalPosition));
+				// path.LocalPaths.Add(new LineSegmentPath(currentNode.parent.node.LocalPosition, currentNode.node.LocalPosition));
                 currentNode = currentNode.parent;
             }
 
