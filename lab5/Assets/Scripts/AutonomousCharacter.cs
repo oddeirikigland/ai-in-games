@@ -141,7 +141,7 @@ namespace Assets.Scripts
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Skeleton"))
             {
                 this.Actions.Add(new SwordAttack(this, enemy));
-                //this.Actions.Add(new DivineSmite(this, enemy));
+                this.Actions.Add(new DivineSmite(this, enemy));
             }
 
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Orc"))
