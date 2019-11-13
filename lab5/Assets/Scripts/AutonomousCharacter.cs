@@ -130,7 +130,7 @@ namespace Assets.Scripts
 
             foreach (var potion in GameObject.FindGameObjectsWithTag("ManaPotion"))
             {
-                //this.Actions.Add(new GetManaPotion(this, potion));
+                this.Actions.Add(new GetManaPotion(this, potion));
             }
 
             foreach (var potion in GameObject.FindGameObjectsWithTag("HealthPotion"))
