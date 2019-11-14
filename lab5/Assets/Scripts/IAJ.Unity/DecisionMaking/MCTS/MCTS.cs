@@ -69,19 +69,31 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             this.CurrentIterationsInFrame = 0;
 
-            //TODO: implement
-            throw new NotImplementedException();
+            while(this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame)
+            {
+                this.CurrentIterationsInFrame++;
+                selectedNode = this.Selection(this.InitialNode);
+                // maybe an expand??
+                reward = this.Playout(selectedNode.State);
+                this.Backpropagate(selectedNode, reward);
+            }
+            return this.BestFirstChild.Action;
         }
 
         protected MCTSNode Selection(MCTSNode initialNode)
         {
             Action nextAction;
             MCTSNode currentNode = initialNode;
-            MCTSNode bestChild;
+            // MCTSNode bestChild;
 
 
-            //TODO: implement
-            throw new NotImplementedException();
+            while(!currentNode.State.IsTerminal()) // TODO: check if correct
+            {
+                nextAction = currentNode.State.GetNextAction();
+                if (nextAction != null) return this.Expand(currentNode, nextAction);
+                else currentNode = this.BestUCTChild(currentNode);
+            }
+            return currentNode;
         }
 
         protected virtual Reward Playout(WorldModel initialPlayoutState)

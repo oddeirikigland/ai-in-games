@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Path;
-// using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.GameManager;
 
 namespace Assets.Scripts
@@ -49,6 +49,7 @@ namespace Assets.Scripts
         public Action CurrentAction { get; private set; }
         public DynamicCharacter Character { get; private set; }
         public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
+        public MCTS MCTS { get; set; }
         public AStarPathfinding AStarPathFinding;
 
         //private fields for internal use only
@@ -73,6 +74,7 @@ namespace Assets.Scripts
             this.navMesh = navMeshGraph;
             this.AStarPathFinding = pathfindingAlgorithm;
             this.AStarPathFinding.NodesPerFrame = 10000;
+            this.MCTSActive = true;
 
 			this.characterAnimator = this.GetComponentInChildren<Animator> ();
         }
@@ -155,7 +157,8 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+            if (MCTSActive) this.MCTS = new MCTS(worldModel);
+            else this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
 
             this.DiaryText.text = "My Diary \n I awoke. What a wonderful day to kill Monsters!\n";
         }
@@ -210,10 +213,12 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                if (MCTSActive) this.MCTS.InitializeMCTSearch();
+                else this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
             }
 
-            this.UpdateDLGOAP();
+            if (MCTSActive) this.UpdateMCTS();
+            else this.UpdateDLGOAP();
 
             if(this.CurrentAction != null)
             {
@@ -282,6 +287,43 @@ namespace Assets.Scripts
                 }
                 var actionText = "";
                 foreach (var action in this.GOAPDecisionMaking.BestActionSequence)
+                {
+                    actionText += "\n" + action.Name;
+                }
+                this.BestActionText.text = "Best Action Sequence: " + actionText;
+            }
+            else
+            {
+                this.BestActionText.text = "Best Action Sequence:\nNone";
+            }
+        }
+
+        private void UpdateMCTS()
+        {
+            bool newDecision = false;
+            if (this.MCTS.InProgress)
+            {
+                //choose an action using the GOB Decision Making process
+                var action = this.MCTS.Run();
+                if (action != null)
+                {
+                    this.CurrentAction = action;
+                    newDecision = true;
+                }
+            }
+
+            this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTS.TotalProcessingTime.ToString("F");
+            // this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
+            // this.ProcessedActionsText.text = "Act. comb. processed: " + this.MCTS.TotalActionCombinationsProcessed;
+
+            if (this.GOAPDecisionMaking.BestAction != null)
+            {
+                if (newDecision)
+                {
+                    // this.DiaryText.text += Time.time + " I decided to " + MCTS.BestAction.Name + "\n";
+                }
+                var actionText = "";
+                foreach (var action in this.MCTS.BestActionSequence)
                 {
                     actionText += "\n" + action.Name;
                 }
