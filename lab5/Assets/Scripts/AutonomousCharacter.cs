@@ -121,8 +121,8 @@ namespace Assets.Scripts
 
             this.Actions = new List<Action>();
 
-            //this.Actions.Add(new ShieldOfFaith(this));
- 
+            this.Actions.Add(new ShieldOfFaith(this));
+
             foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
             {
                 this.Actions.Add(new PickUpChest(this, chest));
