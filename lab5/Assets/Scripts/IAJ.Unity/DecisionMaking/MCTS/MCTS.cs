@@ -73,7 +73,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             {
                 this.CurrentIterationsInFrame++;
                 selectedNode = this.Selection(this.InitialNode);
-                // maybe an expand??
                 reward = this.Playout(selectedNode.State);
                 this.Backpropagate(selectedNode, reward);
             }
@@ -84,10 +83,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             Action nextAction;
             MCTSNode currentNode = initialNode;
-            // MCTSNode bestChild;
 
-
-            while(!currentNode.State.IsTerminal()) // TODO: check if correct
+            while(!currentNode.State.IsTerminal())
             {
                 nextAction = currentNode.State.GetNextAction();
                 if (nextAction != null) return this.Expand(currentNode, nextAction);
@@ -98,20 +95,43 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         protected virtual Reward Playout(WorldModel initialPlayoutState)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+			WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
+			Action[] actions = worldModel.GetExecutableActions();
+			while (!worldModel.IsTerminal())
+			{
+				Action randomAction = actions[RandomGenerator.Next(actions.Length)];
+				randomAction.ApplyActionEffects(worldModel);
+			}
+			return new Reward()
+			{
+				Value = worldModel.GetScore(),
+				PlayerID = worldModel.GetNextPlayer(),
+			};
         }
 
         protected virtual void Backpropagate(MCTSNode node, Reward reward)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+			MCTSNode backNode = node;
+			while(backNode != null)
+			{
+				backNode.N += 1;
+				backNode.Q += reward.Value;
+				backNode = backNode.Parent;
+			}
         }
 
         protected MCTSNode Expand(MCTSNode parent, Action action)
         {
-            //TODO: implement
-            throw new NotImplementedException();
+			WorldModel newState = parent.State.GenerateChildWorldModel();
+			action.ApplyActionEffects(newState);
+			MCTSNode child = new MCTSNode(newState)
+			{
+				Action = action,
+				Parent = parent,
+				PlayerID = newState.GetNextPlayer(),
+			};
+			parent.ChildNodes.Add(child);
+			return child;
         }
 
         //gets the best child of a node, using the UCT formula
