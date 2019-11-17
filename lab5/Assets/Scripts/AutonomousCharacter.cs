@@ -313,14 +313,14 @@ namespace Assets.Scripts
             }
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTS.TotalProcessingTime.ToString("F");
-            // this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
+            //this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
             // this.ProcessedActionsText.text = "Act. comb. processed: " + this.MCTS.TotalActionCombinationsProcessed;
 
-            if (this.GOAPDecisionMaking.BestAction != null)
+            if (this.MCTS.BestFirstChild != null)
             {
                 if (newDecision)
                 {
-                    // this.DiaryText.text += Time.time + " I decided to " + MCTS.BestAction.Name + "\n";
+                    this.DiaryText.text += Time.time + " I decided to " + this.MCTS.BestFirstChild.Action.Name + "\n";
                 }
                 var actionText = "";
                 foreach (var action in this.MCTS.BestActionSequence)

@@ -72,24 +72,34 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while(this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame)
             {
                 this.CurrentIterationsInFrame++;
+				this.CurrentIterations++;
                 selectedNode = this.Selection(this.InitialNode);
                 reward = this.Playout(selectedNode.State);
                 this.Backpropagate(selectedNode, reward);
             }
-            return this.BestFirstChild.Action;
-        }
+
+			this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
+			this.InProgress = false;
+
+            return BestFinalAction(this.InitialNode);
+		}
 
         protected MCTSNode Selection(MCTSNode initialNode)
         {
             Action nextAction;
             MCTSNode currentNode = initialNode;
 
+			int depthCount = 0;
             while(!currentNode.State.IsTerminal())
             {
                 nextAction = currentNode.State.GetNextAction();
+				depthCount++;
                 if (nextAction != null) return this.Expand(currentNode, nextAction);
                 else currentNode = this.BestUCTChild(currentNode);
             }
+
+			if (depthCount > MaxSelectionDepthReached) MaxSelectionDepthReached = depthCount;
+
             return currentNode;
         }
 
@@ -97,11 +107,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
 			WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
 			Action[] actions = worldModel.GetExecutableActions();
+
+			int depthCount = 0;
 			while (!worldModel.IsTerminal())
 			{
 				Action randomAction = actions[RandomGenerator.Next(actions.Length)];
 				randomAction.ApplyActionEffects(worldModel);
+				depthCount++;
 			}
+
+			if (depthCount > MaxPlayoutDepthReached) MaxPlayoutDepthReached = depthCount;
+
 			return new Reward()
 			{
 				Value = worldModel.GetScore(),
@@ -137,17 +153,41 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         protected virtual MCTSNode BestUCTChild(MCTSNode node)
         {
-            //TODO: implement
-            throw new NotImplementedException();
-        }
+			MCTSNode currentNode = node;
+			MCTSNode bestNode = node;
+
+			double bestUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
+			foreach (MCTSNode childnode in currentNode.ChildNodes)
+			{
+				double currentUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
+				if (currentUCTvalue < bestUCTvalue)
+				{
+					bestUCTvalue = currentUCTvalue;
+					bestNode = currentNode;
+				}
+			}
+			return bestNode;
+		}
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
         {
-            //TODO: implement
-            throw new NotImplementedException();
-        }
+			MCTSNode currentNode = node;
+			MCTSNode bestNode = node;
+
+			double bestUCTvalue = (currentNode.Q / currentNode.N) + Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
+			foreach (MCTSNode childnode in currentNode.ChildNodes)
+			{
+				double currentUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
+				if (currentUCTvalue < bestUCTvalue)
+				{
+					bestUCTvalue = currentUCTvalue;
+					bestNode = currentNode;
+				}
+			}
+			return bestNode;
+		}
 
 
         protected Action BestFinalAction(MCTSNode node)
