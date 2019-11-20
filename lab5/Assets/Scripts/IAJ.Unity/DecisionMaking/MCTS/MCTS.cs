@@ -153,42 +153,50 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         protected virtual MCTSNode BestUCTChild(MCTSNode node)
         {
-            MCTSNode currentNode = node;
-            MCTSNode bestNode = node;
-
-            double bestUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
-            foreach (MCTSNode childnode in currentNode.ChildNodes)
-            {
-                double currentUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
-                if (currentUCTvalue < bestUCTvalue)
+            double best = 10000;
+            MCTSNode bestNode = null;
+            if (node.ChildNodes.Count > 0) {
+                foreach (MCTSNode childnode in node.ChildNodes)
                 {
-                    bestUCTvalue = currentUCTvalue;
-                    bestNode = currentNode;
+                    double currentUCTvalue = (childnode.Q / childnode.N) + C * Math.Sqrt((Math.Log(childnode.Parent.N) / childnode.N));
+                    if (currentUCTvalue < best)
+                    {
+                        best = currentUCTvalue;
+                        bestNode = childnode;
+                    }
                 }
+                return bestNode;
             }
-            return bestNode;
-        }
+            else
+            {
+                return bestNode;
+            }
+		}
 
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
-        {
-            MCTSNode currentNode = node;
-            MCTSNode bestNode = node;
-
-            double bestUCTvalue = (currentNode.Q / currentNode.N) + Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
-            foreach (MCTSNode childnode in currentNode.ChildNodes)
-            {
-                double currentUCTvalue = (currentNode.Q / currentNode.N) + C * Math.Sqrt((Math.Log(currentNode.Parent.N) / currentNode.N));
-                if (currentUCTvalue < bestUCTvalue)
+        {           
+            float best = 10000;
+            MCTSNode bestNode = null;
+            if (node.ChildNodes.Count > 0) {
+                foreach (MCTSNode childnode in node.ChildNodes)
                 {
-                    bestUCTvalue = currentUCTvalue;
-                    bestNode = currentNode;
+                    // double currentValue = (childnode.Q / childnode.N) + Math.Sqrt((Math.Log(childnode.Parent.N) / childnode.N));
+                    float currentValue = childnode.Q / childnode.N;
+                    if (currentValue < best)
+                    {
+                        best = currentValue;
+                        bestNode = childnode;
+                    }
                 }
+                return bestNode;
             }
-            return bestNode;
-        }
-
+            else
+            {
+                return bestNode;
+            }
+		}
 
         protected Action BestFinalAction(MCTSNode node)
         {
