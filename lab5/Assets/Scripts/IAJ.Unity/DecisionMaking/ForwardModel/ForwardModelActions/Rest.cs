@@ -51,13 +51,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             // New HP
             HP += 2;
 
-            // Set shield HP to 5 regardless of previous shield
             worldModel.SetProperty(Properties.HP, Mathf.Min(HP, MAXHP));
 
             // Update goal
             var CurrentSurviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            var NewSurviveGoal = CurrentSurviveGoal
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, CurrentSurviveGoal - change);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, CurrentSurviveGoal - 2);
         }
 
         public override float GetHValue(WorldModel worldModel)
