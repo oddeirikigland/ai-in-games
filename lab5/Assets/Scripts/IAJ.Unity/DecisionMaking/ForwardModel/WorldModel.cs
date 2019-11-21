@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.IAJ.Unity.Utils;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
@@ -17,7 +18,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         {
             this.Properties = new Dictionary<string, object>();
             this.GoalValues = new Dictionary<string, float>();
-            this.Actions = actions;
+
+            // Integrates more randomness in choosing actions
+            this.Actions = new List<Action>(actions);
+            RandomHelper.Shuffle(this.Actions);
             this.ActionEnumerator = actions.GetEnumerator();
         }
 

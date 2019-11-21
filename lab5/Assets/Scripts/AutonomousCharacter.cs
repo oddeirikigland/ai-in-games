@@ -52,6 +52,11 @@ namespace Assets.Scripts
         public MCTS MCTS { get; set; }
         public AStarPathfinding AStarPathFinding;
 
+        public const float RESTING_INTERVAL = 5.0f;
+        public const int REST_HP_RECOVERY = 2;
+        public bool Resting = false;
+        public float StopRestTime;
+
         //private fields for internal use only
         private Vector3 startPosition;
         private GlobalPath currentSolution;
@@ -65,7 +70,6 @@ namespace Assets.Scripts
         private Vector3 previousTarget;
 
 		private Animator characterAnimator;
-
 
 
         public void Initialize(NavMeshPathGraph navMeshGraph, AStarPathfinding pathfindingAlgorithm)

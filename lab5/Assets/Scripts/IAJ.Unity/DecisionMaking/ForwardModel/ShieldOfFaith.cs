@@ -48,7 +48,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
 			// Update goal
             var CurrentSurviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.GAIN_LEVEL_GOAL, CurrentSurviveGoal - change);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, CurrentSurviveGoal - change);
 
         }
     }
