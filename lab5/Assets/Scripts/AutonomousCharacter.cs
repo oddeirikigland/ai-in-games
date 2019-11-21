@@ -24,7 +24,7 @@ namespace Assets.Scripts
         public const string BE_QUICK_GOAL = "BeQuick";
         public const string GET_RICH_GOAL = "GetRich";
 
-        public const float DECISION_MAKING_INTERVAL = 10.0f;
+        public const float DECISION_MAKING_INTERVAL = 20.0f;
         //public fields to be set in Unity Editor
         public GameManager.GameManager GameManager;
         public Text SurviveGoalText;
@@ -319,6 +319,9 @@ namespace Assets.Scripts
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTS.TotalProcessingTime.ToString("F");
             //this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
             // this.ProcessedActionsText.text = "Act. comb. processed: " + this.MCTS.TotalActionCombinationsProcessed;
+
+            // print q value of chosen action
+            // print predicted world state, go to end state of sequence and print what he thinks its about
 
             if (this.MCTS.BestFirstChild != null)
             {

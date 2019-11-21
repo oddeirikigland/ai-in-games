@@ -28,15 +28,15 @@
         public float GetDiscontentment()
         {
             var insistence = this.InsistenceValue;
+            if (insistence <= 0) return 0;
             var discontentment = this.Weight * insistence * insistence;
-            if (discontentment <= 0) return 0;
             return discontentment;
         }
 
         public float GetDiscontentment(float goalValue)
         {
+            if (goalValue <= 0) return 0;
             var discontentment = this.Weight * goalValue * goalValue;
-            if (discontentment <= 0) return 0;
             return discontentment;
         }
     }
