@@ -58,8 +58,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 			{
 				int maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
 				int mana = (int)worldModel.GetProperty(Properties.MANA);
-				int shildHP = (int)worldModel.GetProperty(Properties.ShieldHP);
-				return (money / 25.0f + (float)HP / maxHP + time / 150.0f + mana / 10.0f + shildHP / 5.0f) / 5;
+				int shieldHP = (int)worldModel.GetProperty(Properties.ShieldHP);
+				return (money / 25.0f + (float)HP / maxHP + time / 150.0f + mana / 10.0f + shieldHP / 5.0f) / 5;
 
 			}
 		}
