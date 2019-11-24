@@ -16,10 +16,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             int HP = (int)this.Character.GameManager.characterData.HP;
             int MAXHP = (int)this.Character.GameManager.characterData.MaxHP;
-            bool Resting = this.Character.Resting;
 
             // Rest can only be executed if character is missing more than 2 HP
-            if (Mathf.Abs(MAXHP - HP) >= 2 && Resting != true)
+            if (MAXHP > HP)
                 return true;
             else
                 return false;
@@ -29,10 +28,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             int HP = (int)worldModel.GetProperty(Properties.HP);
             int MAXHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            bool Resting = this.Character.Resting;
 
             // Rest can only be executed if character is missing more than 2 HP
-            if (Mathf.Abs(MAXHP - HP) >= 2 && Resting != true)
+            if (MAXHP > HP)
                 return true;
             else
                 return false;
@@ -52,6 +50,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             HP += 2;
 
             worldModel.SetProperty(Properties.HP, Mathf.Min(HP, MAXHP));
+			worldModel.SetProperty(Properties.TIME, (float)worldModel.GetProperty(Properties.TIME) + 5.0f);
 
             // Update goal
             var CurrentSurviveGoal = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);

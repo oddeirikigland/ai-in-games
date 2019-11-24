@@ -137,6 +137,7 @@ namespace Assets.Scripts
             this.Actions.Add(new ShieldOfFaith(this));
             this.Actions.Add(new Teleport(this));
             this.Actions.Add(new Rest(this));
+			this.Actions.Add(new LevelUp(this));
 
             foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
             {
