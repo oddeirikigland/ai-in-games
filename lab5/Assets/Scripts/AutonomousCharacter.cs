@@ -317,8 +317,8 @@ namespace Assets.Scripts
             }
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTS.TotalProcessingTime.ToString("F");
-            //this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
-            // this.ProcessedActionsText.text = "Act. comb. processed: " + this.MCTS.TotalActionCombinationsProcessed;
+            this.ProcessedActionsText.text = "Max. Playout Depth: " + this.MCTS.MaxPlayoutDepthReached.ToString("F");
+            this.BestDiscontentmentText.text = "Max. Selection Depth: " + this.MCTS.MaxSelectionDepthReached.ToString("F");
 
             // print q value of chosen action
             // print predicted world state, go to end state of sequence and print what he thinks its about
