@@ -59,11 +59,11 @@ namespace Assets.Scripts.GameManager
         public override void CalculateNextPlayer()
         {
             //if the previous player was the enemy, we want the hero to have the opportunity to make a decision
-            if(this.Parent.GetNextPlayer() == 1)
+            /*if(this.Parent.GetNextPlayer() == 1)
             {
                 this.NextPlayer = 0;
                 return;
-            }
+            }*/
 
             Vector3 position = (Vector3)this.GetProperty(Properties.POSITION);
             bool enemyEnabled;

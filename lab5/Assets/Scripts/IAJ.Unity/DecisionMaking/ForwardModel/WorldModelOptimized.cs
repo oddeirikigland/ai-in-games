@@ -1,166 +1,4 @@
-﻿/*using Assets.Scripts.IAJ.Unity.Utils;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
-{
-    public class WorldModel
-    {
-       *//* private Dictionary<string, object> Properties { get; set; }
-        private List<Action> Actions { get; set; }
-        protected IEnumerator<Action> ActionEnumerator { get; set; } 
-
-        
-        private Dictionary<string, float> GoalValues { get; set; } 
-
-        protected WorldModel Parent { get; set; }
-
-        public WorldModel(List<Action> actions)
-        {
-            this.Properties = new Dictionary<string, object>();
-            this.GoalValues = new Dictionary<string, float>();
-
-            // Integrates more randomness in choosing actions
-            this.Actions = new List<Action>(actions);
-            RandomHelper.Shuffle(this.Actions);
-            this.ActionEnumerator = actions.GetEnumerator();
-        }
-
-        public WorldModel(WorldModel parent)
-        {
-            this.Properties = new Dictionary<string, object>();
-            this.GoalValues = new Dictionary<string, float>();
-            this.Actions = parent.Actions;
-            this.Parent = parent;
-            this.ActionEnumerator = this.Actions.GetEnumerator();
-        }
-
-        public virtual object GetProperty(string propertyName)
-        {
-            //recursive implementation of WorldModel
-            if (this.Properties.ContainsKey(propertyName))
-            {
-                return this.Properties[propertyName];
-            }
-            else if (this.Parent != null)
-            {
-                return this.Parent.GetProperty(propertyName);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public virtual void SetProperty(string propertyName, object value)
-        {
-            this.Properties[propertyName] = value;
-        }
-
-        public virtual float GetGoalValue(string goalName)
-        {
-            //recursive implementation of WorldModel
-            if (this.GoalValues.ContainsKey(goalName))
-            {
-                return this.GoalValues[goalName];
-            }
-            else if (this.Parent != null)
-            {
-                return this.Parent.GetGoalValue(goalName);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public virtual void SetGoalValue(string goalName, float value)
-        {
-            var limitedValue = value;
-            if (value > 10.0f)
-            {
-                limitedValue = 10.0f;
-            }
-
-            else if (value < 0.0f)
-            {
-                limitedValue = 0.0f;
-            }
-
-            this.GoalValues[goalName] = limitedValue;
-        }
-
-        public virtual WorldModel GenerateChildWorldModel()
-        {
-            return new WorldModel(this);
-        }
-
-        public float CalculateDiscontentment(List<Goal> goals)
-        {
-            var discontentment = 0.0f;
-
-            foreach (var goal in goals)
-            {
-                var newValue = this.GetGoalValue(goal.Name);
-
-                discontentment += goal.GetDiscontentment(newValue);
-            }
-
-            return discontentment;
-        }
-
-        public virtual Action GetNextAction()
-        {
-            Action action = null;
-            //returns the next action that can be executed or null if no more executable actions exist
-            if (this.ActionEnumerator.MoveNext())
-            {
-                action = this.ActionEnumerator.Current;
-            }
-
-            while (action != null && !action.CanExecute(this))
-            {
-                if (this.ActionEnumerator.MoveNext())
-                {
-                    action = this.ActionEnumerator.Current;    
-                }
-                else
-                {
-                    action = null;
-                }
-            }
-
-            return action;
-        }
-
-        public virtual Action[] GetExecutableActions()
-        {
-            return this.Actions.Where(a => a.CanExecute(this)).ToArray();
-        }
-
-        public virtual bool IsTerminal()
-        {
-            return true;
-        }
-        
-
-        public virtual float GetScore()
-        {
-            return 0.0f;
-        }
-
-        public virtual int GetNextPlayer()
-        {
-            return 0;
-        }
-
-        public virtual void CalculateNextPlayer()
-        {
-        }*//*
-    }
-}
-*/
-using Assets.Scripts.GameManager;
+﻿/*using Assets.Scripts.GameManager;
 using Assets.Scripts.IAJ.Unity.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,21 +6,21 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 {
-    public class WorldModel
+    public class WorldModelOptimized
     {
         private List<Action> Actions { get; set; }
         protected IEnumerator<Action> ActionEnumerator { get; set; }
         private Dictionary<string, float> GoalValues { get; set; }
 
         private int MANA { get; set; }
-        private int HP { get; set; }
-        private int ShieldHP { get; set; }
-        private int MAXHP { get; set; }
-        private int XP { get; set; }
-        private float TIME { get; set; }
-        private int MONEY { get; set; }
-        private int LEVEL { get; set; }
-        private Vector3 POSITION { get; set; }
+       private int HP { get; set; }
+       private int ShieldHP { get; set; }
+       private int MAXHP { get; set; }
+       private int XP { get; set; }
+       private int TIME { get; set; }
+       private int MONEY { get; set; }
+       private int LEVEL { get; set; }
+       private Vector3 POSITION { get; set; }
 
         private bool SKELETON1;
         private bool SKELETON2;
@@ -197,9 +35,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         private bool HEALTHPOTION1;
         private bool HEALTHPOTION2;
         private bool MANAPOTION1;
-        private bool MANAPOTION2;
+        private bool MANAPOTION2; 
 
-        public WorldModel(List<Action> actions)
+        public WorldModelOptimized(List<Action> actions)
         {
             this.GoalValues = new Dictionary<string, float>();
 
@@ -209,7 +47,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             this.ActionEnumerator = actions.GetEnumerator();
         }
 
-        public WorldModel(WorldModel parent)
+        public WorldModelOptimized(WorldModelOptimized parent)
         {
             this.MANA = parent.MANA;
             this.HP = parent.HP;
@@ -221,20 +59,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             this.LEVEL = parent.LEVEL;
             this.POSITION = parent.POSITION;
 
-            this.SKELETON1 = parent.SKELETON1;
-            this.SKELETON2 = parent.SKELETON2;
-            this.ORC1 = parent.ORC1;
-            this.ORC2 = parent.ORC2;
-            this.DRAGON = parent.DRAGON;
-            this.CHEST1 = parent.CHEST1;
-            this.CHEST2 = parent.CHEST2;
-            this.CHEST3 = parent.CHEST3;
-            this.CHEST4 = parent.CHEST4;
-            this.CHEST5 = parent.CHEST5;
+            this.SKELETON1     = parent.SKELETON1;
+            this.SKELETON2     = parent.SKELETON2;    
+            this.ORC1          = parent.ORC1;         
+            this.ORC2          = parent.ORC2;         
+            this.DRAGON        = parent.DRAGON;       
+            this.CHEST1        = parent.CHEST1;       
+            this.CHEST2        = parent.CHEST2;       
+            this.CHEST3        = parent.CHEST3;       
+            this.CHEST4        = parent.CHEST4;       
+            this.CHEST5        = parent.CHEST5;       
             this.HEALTHPOTION1 = parent.HEALTHPOTION1;
             this.HEALTHPOTION2 = parent.HEALTHPOTION2;
-            this.MANAPOTION1 = parent.MANAPOTION1;
-            this.MANAPOTION2 = parent.MANAPOTION2;
+            this.MANAPOTION1   = parent.MANAPOTION1;  
+            this.MANAPOTION2   = parent.MANAPOTION2;  
 
             this.Actions = parent.Actions;
             this.ActionEnumerator = this.Actions.GetEnumerator();
@@ -317,7 +155,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
                     this.XP = (int)value;
                     break;
                 case Properties.TIME:
-                    this.TIME = (float)value;
+                    this.TIME = (int)value;
                     break;
                 case Properties.MONEY:
                     this.MONEY = (int)value;
@@ -378,7 +216,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public virtual float GetGoalValue(string goalName)
         {
-            /*//recursive implementation of WorldModel
+            *//*//recursive implementation of WorldModel
             if (this.GoalValues.ContainsKey(goalName))
             {
                 return this.GoalValues[goalName];
@@ -390,13 +228,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             else
             {
                 return 0;
-            }*/
+            }*//*
             return 0;
         }
 
         public virtual void SetGoalValue(string goalName, float value)
         {
-            /*var limitedValue = value;
+            *//*var limitedValue = value;
             if (value > 10.0f)
             {
                 limitedValue = 10.0f;
@@ -407,7 +245,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
                 limitedValue = 0.0f;
             }
 
-            this.GoalValues[goalName] = limitedValue;*/
+            this.GoalValues[goalName] = limitedValue;*//*
         }
 
         public virtual WorldModel GenerateChildWorldModel()
@@ -417,7 +255,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public float CalculateDiscontentment(List<Goal> goals)
         {
-            /*var discontentment = 0.0f;
+            *//*var discontentment = 0.0f;
 
             foreach (var goal in goals)
             {
@@ -426,8 +264,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
                 discontentment += goal.GetDiscontentment(newValue);
             }
 
-            return discontentment;*/
-            return 0;
+            return discontentment;*//*
         }
 
         public virtual Action GetNextAction()
@@ -443,7 +280,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             {
                 if (this.ActionEnumerator.MoveNext())
                 {
-                    action = this.ActionEnumerator.Current;
+                    action = this.ActionEnumerator.Current;    
                 }
                 else
                 {
@@ -463,7 +300,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         {
             return true;
         }
-
+        
 
         public virtual float GetScore()
         {
@@ -480,4 +317,4 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         }
     }
 }
-
+*/
