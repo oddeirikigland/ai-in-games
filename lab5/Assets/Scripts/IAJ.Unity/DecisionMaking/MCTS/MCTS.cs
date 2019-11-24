@@ -35,8 +35,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 8000;
-            this.MaxIterationsProcessedPerFrame = 400;
+            this.MaxIterations = 6000;
+            this.MaxIterationsProcessedPerFrame = 200;
             this.RandomGenerator = new System.Random();
         }
 
@@ -113,23 +113,29 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         protected virtual Reward Playout(WorldModel initialPlayoutState)
         {
-			WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
-			Action[] actions = worldModel.GetExecutableActions();
+			Action[] actions = initialPlayoutState.GetExecutableActions();
+			float score = 0;
 
-			int depthCount = 0;
-			while (!worldModel.IsTerminal())
+			foreach(Action action in actions)
 			{
-				Action randomAction = actions[RandomGenerator.Next(actions.Length)];
-				randomAction.ApplyActionEffects(worldModel);
-				depthCount++;
+				WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
+				int depthCount = 0;
+				while (!worldModel.IsTerminal())
+				{
+					Action randomAction = actions[RandomGenerator.Next(actions.Length)];
+					randomAction.ApplyActionEffects(worldModel);
+					depthCount++;
+				}
+				if (depthCount > MaxPlayoutDepthReached) MaxPlayoutDepthReached = depthCount;
+
+				score += worldModel.GetScore();
 			}
 
-			if (depthCount > MaxPlayoutDepthReached) MaxPlayoutDepthReached = depthCount;
 
 			return new Reward()
 			{
-				Value = worldModel.GetScore(),
-				PlayerID = worldModel.GetNextPlayer(),
+				Value = score / actions.Length,
+				PlayerID = initialPlayoutState.GetNextPlayer(),
 			};
         }
 
