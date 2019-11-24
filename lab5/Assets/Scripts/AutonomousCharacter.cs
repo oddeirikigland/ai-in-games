@@ -16,6 +16,14 @@ using Assets.Scripts.GameManager;
 
 namespace Assets.Scripts
 {
+	public enum DecisionAlgorthim
+	{
+		GOAP,
+		MCTS,
+		MCTSBiased,
+		MCTSLimited,
+	}
+
     public class AutonomousCharacter : MonoBehaviour
     {
         //constants
@@ -37,8 +45,7 @@ namespace Assets.Scripts
         public Text ProcessedActionsText;
         public Text BestActionText;
         public Text DiaryText;
-        public bool MCTSActive;
-		public bool BiasedMCTS;
+		public DecisionAlgorthim decisionAlgorthim = DecisionAlgorthim.MCTS;
 
 
         public Goal BeQuickGoal { get; private set; }
@@ -79,7 +86,6 @@ namespace Assets.Scripts
             this.navMesh = navMeshGraph;
             this.AStarPathFinding = pathfindingAlgorithm;
             this.AStarPathFinding.NodesPerFrame = 10000;
-            this.MCTSActive = true;
 
 			this.characterAnimator = this.GetComponentInChildren<Animator> ();
         }
@@ -164,14 +170,21 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-			if (MCTSActive)
+			switch (this.decisionAlgorthim)
 			{
-				if (BiasedMCTS)
-					this.MCTS = new MCTSBiasedPlayout(worldModel);
-				else
+				case DecisionAlgorthim.MCTS:
 					this.MCTS = new MCTS(worldModel);
+					break;
+				case DecisionAlgorthim.MCTSBiased:
+					this.MCTS = new MCTSBiasedPlayout(worldModel);
+					break;
+				case DecisionAlgorthim.MCTSLimited:
+					this.MCTS = new MCTSBiasedLimited(worldModel);
+					break;
+				default:
+					this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
+					break;
 			}
-			else this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
 
             this.DiaryText.text = "My Diary \n I awoke. What a wonderful day to kill Monsters!\n";
         }
@@ -226,11 +239,11 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                if (MCTSActive) this.MCTS.InitializeMCTSearch();
+                if (decisionAlgorthim != DecisionAlgorthim.GOAP) this.MCTS.InitializeMCTSearch();
                 else this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
             }
 
-            if (MCTSActive) this.UpdateMCTS();
+            if (decisionAlgorthim != DecisionAlgorthim.GOAP) this.UpdateMCTS();
             else this.UpdateDLGOAP();
 
             if(this.CurrentAction != null)
