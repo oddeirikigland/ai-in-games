@@ -128,6 +128,8 @@ namespace Assets.Scripts
             this.Actions = new List<Action>();
 
             this.Actions.Add(new ShieldOfFaith(this));
+            this.Actions.Add(new Teleport(this));
+            this.Actions.Add(new Rest(this));
 
             foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
             {
