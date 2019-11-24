@@ -39,7 +39,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             int currentMana = (int)worldModel.GetProperty(Properties.MANA);
 
             // calculate difference between possible current shield and maximum shield 
-            var currentShieldValue = (int)worldModel.GetProperty("ShieldHP");
+            var currentShieldValue = (int)worldModel.GetProperty(Properties.ShieldHP);
             var change = Math.Abs(currentShieldValue - this.maxShield);
 
             // Set shield HP to 5 regardless of previous shield
@@ -51,5 +51,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, CurrentSurviveGoal - change);
 
         }
-    }
+
+		public override float GetHValue(WorldModel worldModel)
+		{
+			var mana = (int)worldModel.GetProperty(Properties.MANA);
+			var shild = (int)worldModel.GetProperty(Properties.ShieldHP);
+			if (mana > manaConsumption && shild != 0)
+				return 3.0f;
+			return base.GetHValue(worldModel);
+		}
+	}
 }

@@ -14,7 +14,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public bool InProgress { get; private set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsProcessedPerFrame { get; set; }
-        public int MaxPlayoutDepthReached { get; private set; }
+        public int MaxPlayoutDepthReached { get; protected set; }
         public int MaxSelectionDepthReached { get; private set; }
         public float TotalProcessingTime { get; private set; }
         public MCTSNode BestFirstChild { get; set; }
@@ -130,7 +130,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
 				score += worldModel.GetScore();
 			}
-
 
 			return new Reward()
 			{

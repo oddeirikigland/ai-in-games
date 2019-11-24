@@ -50,7 +50,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            return -10.0f;
+			return 5.0f;
         }
     }
 }

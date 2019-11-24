@@ -38,6 +38,7 @@ namespace Assets.Scripts
         public Text BestActionText;
         public Text DiaryText;
         public bool MCTSActive;
+		public bool BiasedMCTS;
 
 
         public Goal BeQuickGoal { get; private set; }
@@ -163,8 +164,14 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            if (MCTSActive) this.MCTS = new MCTS(worldModel);
-            else this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+			if (MCTSActive)
+			{
+				if (BiasedMCTS)
+					this.MCTS = new MCTSBiasedPlayout(worldModel);
+				else
+					this.MCTS = new MCTS(worldModel);
+			}
+			else this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
 
             this.DiaryText.text = "My Diary \n I awoke. What a wonderful day to kill Monsters!\n";
         }

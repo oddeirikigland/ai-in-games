@@ -60,7 +60,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            return base.GetHValue(worldModel);
+			var health = (int)worldModel.GetProperty(Properties.HP);
+			var time = (float)worldModel.GetProperty(Properties.TIME);
+            return health * time * 0.005f;
         }
     }
 }
