@@ -56,9 +56,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 		{
 			var mana = (int)worldModel.GetProperty(Properties.MANA);
 			var shild = (int)worldModel.GetProperty(Properties.ShieldHP);
-			if (mana > manaConsumption && shild != 0)
+			if (mana > manaConsumption && shild != 5)
 				return 3.0f;
-			return base.GetHValue(worldModel);
+			return 10.0f;
 		}
 	}
 }

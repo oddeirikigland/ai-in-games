@@ -52,7 +52,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            return base.GetHValue(worldModel);
+			int aux = 0;
+			if (this.Target.name == Properties.CHEST5)
+				aux = -15;
+            return base.GetHValue(worldModel) + aux;
         }
     }
 }

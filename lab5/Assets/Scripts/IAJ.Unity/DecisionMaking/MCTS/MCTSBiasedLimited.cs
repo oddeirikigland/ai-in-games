@@ -11,7 +11,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
 	class MCTSBiasedLimited : MCTSBiasedPlayout
 	{
-		private int maxPlayoutDepth;
+		public int MaxPlayoutDepth = 10;
 
 		public MCTSBiasedLimited(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
 		{
@@ -22,7 +22,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 			WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
 
 			int depthCount = 0;
-			while (!worldModel.IsTerminal() && depthCount <= maxPlayoutDepth)
+			while (!worldModel.IsTerminal() && depthCount <= MaxPlayoutDepth)
 			{
 				Action[] actions = worldModel.GetExecutableActions();
 				Action biasedAction = actions.First();
@@ -52,15 +52,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 			float time = (float)worldModel.GetProperty(Properties.TIME);
 
 			if (HP <= 0) return 0.0f;
-			else if (time > 150) return 0.0f;
+			else if (time >= 150) return 0.0f;
 			else if (money == 25) return 1.0f;
 			else
 			{
 				int maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
 				int mana = (int)worldModel.GetProperty(Properties.MANA);
-				int shildHP = (int)worldModel.GetProperty(Properties.ShieldHP);
-				return (money / 25.0f + (float)HP / maxHP + time / 150.0f + mana / 10.0f + shildHP / 5.0f) / 5;
-
+				int shieldHP = (int)worldModel.GetProperty(Properties.ShieldHP);
+				return (money / 25.0f + (float)HP / maxHP + (0.1f * (150.0f-time) / 150.0f) + mana / 10.0f + shieldHP / 5.0f) / 4.1f;
 			}
 		}
 	}

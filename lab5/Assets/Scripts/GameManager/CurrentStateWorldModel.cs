@@ -12,7 +12,7 @@ namespace Assets.Scripts.GameManager
 
         public CurrentStateWorldModel(GameManager gameManager, List<Action> actions, List<Goal> goals) : base(gameManager, actions)
         {
-            this.Parent = null;
+            /*this.Parent = null;*/
             this.Goals = new Dictionary<string, Goal>();
 
             foreach (var goal in goals)

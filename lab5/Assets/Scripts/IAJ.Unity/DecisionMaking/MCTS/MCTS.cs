@@ -74,6 +74,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.CurrentIterationsInFrame++;
 				this.CurrentIterations++;
                 selectedNode = this.Selection(this.InitialNode);
+				if (selectedNode.State.GetScore() != 0)
+				{
+					this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
+					this.InProgress = false;
+					return this.EarlyStop(selectedNode);
+				}
                 reward = this.Playout(selectedNode.State);
                 this.Backpropagate(selectedNode, reward);
             }
@@ -87,6 +93,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 				return BestFinalAction(this.InitialNode);
 			}
 			return this.InitialNode.Action;
+		}
+
+		private Action EarlyStop(MCTSNode selectedNode)
+		{
+			MCTSNode node = selectedNode;
+			this.BestActionSequence = new List<Action>();
+			while (node.Parent != InitialNode)
+			{
+				BestActionSequence.Add(node.Action);
+				node = node.Parent;
+			}
+			this.BestActionSequence.Reverse();
+			this.BestFirstChild = node;
+			return this.BestFirstChild.Action;
 		}
 
         protected MCTSNode Selection(MCTSNode initialNode)
@@ -153,6 +173,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
 			WorldModel newState = parent.State.GenerateChildWorldModel();
 			action.ApplyActionEffects(newState);
+
 			MCTSNode child = new MCTSNode(newState)
 			{
 				Action = action,
