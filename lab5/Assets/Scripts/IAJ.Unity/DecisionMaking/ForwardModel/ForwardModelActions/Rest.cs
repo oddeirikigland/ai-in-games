@@ -61,7 +61,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
 			var health = (int)worldModel.GetProperty(Properties.HP);
 			var time = (float)worldModel.GetProperty(Properties.TIME);
-            return health * time * 0.005f;
+            return health * time;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 			var maxHealth = (int)worldModel.GetProperty(Properties.MAXHP);
 			if (health < maxHealth)
 				return base.GetHValue(worldModel) * (float)health/maxHealth;
-			return 10.0f;
+			return 0.0f;
         }
     }
 }

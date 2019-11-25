@@ -211,30 +211,30 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public WorldModel(WorldModel parent)
         {
-            this.MANA = parent.MANA;
-            this.HP = parent.HP;
-            this.ShieldHP = parent.ShieldHP;
-            this.MAXHP = parent.MAXHP;
-            this.XP = parent.XP;
-            this.TIME = parent.TIME;
-            this.MONEY = parent.MONEY;
-            this.LEVEL = parent.LEVEL;
-            this.POSITION = parent.POSITION;
+            this.MANA =			(int)parent.GetProperty(Properties.MANA);
+            this.HP =			(int)parent.GetProperty(Properties.HP);
+            this.ShieldHP =		(int)parent.GetProperty(Properties.ShieldHP);
+            this.MAXHP =		(int)parent.GetProperty(Properties.MAXHP);
+            this.XP =			(int)parent.GetProperty(Properties.XP);
+            this.TIME =			(float)parent.GetProperty(Properties.TIME);
+            this.MONEY =		(int)parent.GetProperty(Properties.MONEY);
+            this.LEVEL =		(int)parent.GetProperty(Properties.LEVEL);
+            this.POSITION =		(Vector3)parent.GetProperty(Properties.POSITION);
 
-            this.SKELETON1 = parent.SKELETON1;
-            this.SKELETON2 = parent.SKELETON2;
-            this.ORC1 = parent.ORC1;
-            this.ORC2 = parent.ORC2;
-            this.DRAGON = parent.DRAGON;
-            this.CHEST1 = parent.CHEST1;
-            this.CHEST2 = parent.CHEST2;
-            this.CHEST3 = parent.CHEST3;
-            this.CHEST4 = parent.CHEST4;
-            this.CHEST5 = parent.CHEST5;
-            this.HEALTHPOTION1 = parent.HEALTHPOTION1;
-            this.HEALTHPOTION2 = parent.HEALTHPOTION2;
-            this.MANAPOTION1 = parent.MANAPOTION1;
-            this.MANAPOTION2 = parent.MANAPOTION2;
+            this.SKELETON1 =	(bool)parent.GetProperty(Properties.SKELETON1);
+            this.SKELETON2 =	(bool)parent.GetProperty(Properties.SKELETON2);
+            this.ORC1 =			(bool)parent.GetProperty(Properties.ORC1);
+            this.ORC2 =			(bool)parent.GetProperty(Properties.ORC2);
+            this.DRAGON =		(bool)parent.GetProperty(Properties.DRAGON);
+            this.CHEST1 =		(bool)parent.GetProperty(Properties.CHEST1);
+            this.CHEST2 =		(bool)parent.GetProperty(Properties.CHEST2);
+            this.CHEST3 =		(bool)parent.GetProperty(Properties.CHEST3);
+            this.CHEST4 =		(bool)parent.GetProperty(Properties.CHEST4);
+            this.CHEST5 =		(bool)parent.GetProperty(Properties.CHEST5);
+            this.HEALTHPOTION1= (bool)parent.GetProperty(Properties.HEALTHPOTION1);
+            this.HEALTHPOTION2= (bool)parent.GetProperty(Properties.HEALTHPOTION2);
+            this.MANAPOTION1 =	(bool)parent.GetProperty(Properties.MANAPOTION1);
+            this.MANAPOTION2 =	(bool)parent.GetProperty(Properties.MANAPOTION2);
 
             this.Actions = parent.Actions;
             this.ActionEnumerator = this.Actions.GetEnumerator();
@@ -467,8 +467,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 
         public virtual float GetScore()
         {
-            return 0.0f;
-        }
+			int money = this.MONEY;
+			int HP = this.HP;
+			float time = this.TIME;
+
+			if (HP <= 0) return 0.0f;
+			else if (money == 25)
+			{
+				return (1.0f - time * 0.005f);
+			}
+			else return 0.0f;
+		}
 
         public virtual int GetNextPlayer()
         {
