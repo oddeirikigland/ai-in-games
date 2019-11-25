@@ -49,7 +49,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            return base.GetHValue(worldModel);
+			var health = (int)worldModel.GetProperty(Properties.HP);
+			var maxHealth = (int)worldModel.GetProperty(Properties.MAXHP);
+			if (health < maxHealth)
+				return base.GetHValue(worldModel) * (float)health/maxHealth;
+			return 10.0f;
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 {
     public class GetManaPotion : WalkToTargetAndExecuteAction
     {
+		private int MaxMana = 10;
 
         public GetManaPotion(AutonomousCharacter character, GameObject target) : base("GetManaPotion", character,target)
         {
@@ -41,7 +42,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             base.ApplyActionEffects(worldModel);
                 
             // worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0);
-            worldModel.SetProperty(Properties.MANA, 10);
+            worldModel.SetProperty(Properties.MANA, MaxMana);
 
             //disables the target object so that it can't be reused again
             worldModel.SetProperty(this.Target.name, false);
@@ -49,7 +50,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            return base.GetHValue(worldModel);
+			var mana = (int)worldModel.GetProperty(Properties.MANA); 
+            return base.GetHValue(worldModel) * mana;
         }
     }
 }

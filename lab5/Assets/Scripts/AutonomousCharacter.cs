@@ -16,6 +16,14 @@ using Assets.Scripts.GameManager;
 
 namespace Assets.Scripts
 {
+	public enum DecisionAlgorthim
+	{
+		GOAP,
+		MCTS,
+		MCTSBiased,
+		MCTSLimited,
+	}
+
     public class AutonomousCharacter : MonoBehaviour
     {
         //constants
@@ -24,7 +32,7 @@ namespace Assets.Scripts
         public const string BE_QUICK_GOAL = "BeQuick";
         public const string GET_RICH_GOAL = "GetRich";
 
-        public const float DECISION_MAKING_INTERVAL = 10.0f;
+        public const float DECISION_MAKING_INTERVAL = 20.0f;
         //public fields to be set in Unity Editor
         public GameManager.GameManager GameManager;
         public Text SurviveGoalText;
@@ -37,7 +45,7 @@ namespace Assets.Scripts
         public Text ProcessedActionsText;
         public Text BestActionText;
         public Text DiaryText;
-        public bool MCTSActive;
+		public DecisionAlgorthim decisionAlgorthim = DecisionAlgorthim.MCTS;
 
 
         public Goal BeQuickGoal { get; private set; }
@@ -51,6 +59,11 @@ namespace Assets.Scripts
         public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
         public MCTS MCTS { get; set; }
         public AStarPathfinding AStarPathFinding;
+
+        public const float RESTING_INTERVAL = 5.0f;
+        public const int REST_HP_RECOVERY = 2;
+        public bool Resting = false;
+        public float StopRestTime;
 
         //private fields for internal use only
         private Vector3 startPosition;
@@ -67,14 +80,12 @@ namespace Assets.Scripts
 		private Animator characterAnimator;
 
 
-
         public void Initialize(NavMeshPathGraph navMeshGraph, AStarPathfinding pathfindingAlgorithm)
         {
             this.draw = true;
             this.navMesh = navMeshGraph;
             this.AStarPathFinding = pathfindingAlgorithm;
             this.AStarPathFinding.NodesPerFrame = 10000;
-            this.MCTSActive = true;
 
 			this.characterAnimator = this.GetComponentInChildren<Animator> ();
         }
@@ -124,6 +135,8 @@ namespace Assets.Scripts
             this.Actions = new List<Action>();
 
             this.Actions.Add(new ShieldOfFaith(this));
+            this.Actions.Add(new Teleport(this));
+            this.Actions.Add(new Rest(this));
 
             foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
             {
@@ -157,8 +170,21 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            if (MCTSActive) this.MCTS = new MCTS(worldModel);
-            else this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+			switch (this.decisionAlgorthim)
+			{
+				case DecisionAlgorthim.MCTS:
+					this.MCTS = new MCTS(worldModel);
+					break;
+				case DecisionAlgorthim.MCTSBiased:
+					this.MCTS = new MCTSBiasedPlayout(worldModel);
+					break;
+				case DecisionAlgorthim.MCTSLimited:
+					this.MCTS = new MCTSBiasedLimited(worldModel);
+					break;
+				default:
+					this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
+					break;
+			}
 
             this.DiaryText.text = "My Diary \n I awoke. What a wonderful day to kill Monsters!\n";
         }
@@ -213,11 +239,11 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                if (MCTSActive) this.MCTS.InitializeMCTSearch();
+                if (decisionAlgorthim != DecisionAlgorthim.GOAP) this.MCTS.InitializeMCTSearch();
                 else this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
             }
 
-            if (MCTSActive) this.UpdateMCTS();
+            if (decisionAlgorthim != DecisionAlgorthim.GOAP) this.UpdateMCTS();
             else this.UpdateDLGOAP();
 
             if(this.CurrentAction != null)
@@ -313,8 +339,11 @@ namespace Assets.Scripts
             }
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTS.TotalProcessingTime.ToString("F");
-            //this.BestDiscontentmentText.text = "Best Discontentment: " + this.MCTS.BestDiscontentmentValue.ToString("F");
-            // this.ProcessedActionsText.text = "Act. comb. processed: " + this.MCTS.TotalActionCombinationsProcessed;
+            this.ProcessedActionsText.text = "Max. Playout Depth: " + this.MCTS.MaxPlayoutDepthReached.ToString("F");
+            this.BestDiscontentmentText.text = "Max. Selection Depth: " + this.MCTS.MaxSelectionDepthReached.ToString("F");
+
+            // print q value of chosen action
+            // print predicted world state, go to end state of sequence and print what he thinks its about
 
             if (this.MCTS.BestFirstChild != null)
             {

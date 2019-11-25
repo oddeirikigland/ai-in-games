@@ -14,7 +14,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public bool InProgress { get; private set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsProcessedPerFrame { get; set; }
-        public int MaxPlayoutDepthReached { get; private set; }
+        public int MaxPlayoutDepthReached { get; protected set; }
         public int MaxSelectionDepthReached { get; private set; }
         public float TotalProcessingTime { get; private set; }
         public MCTSNode BestFirstChild { get; set; }
@@ -35,8 +35,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 100;
-            this.MaxIterationsProcessedPerFrame = 10;
+            this.MaxIterations = 6000;
+            this.MaxIterationsProcessedPerFrame = 200;
             this.RandomGenerator = new System.Random();
         }
 
@@ -69,7 +69,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             this.CurrentIterationsInFrame = 0;
 
-            while(this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame)
+            while(this.CurrentIterationsInFrame < this.MaxIterationsProcessedPerFrame && this.CurrentIterations < this.MaxIterations)
             {
                 this.CurrentIterationsInFrame++;
 				this.CurrentIterations++;
@@ -79,9 +79,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             }
 
 			this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
-			this.InProgress = false;
 
-            return BestFinalAction(this.InitialNode);
+			if (this.CurrentIterations >= this.MaxIterations)
+			{
+				this.InProgress = false;
+
+				return BestFinalAction(this.InitialNode);
+			}
+			return this.InitialNode.Action;
 		}
 
         protected MCTSNode Selection(MCTSNode initialNode)
@@ -94,7 +99,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             {
                 nextAction = currentNode.State.GetNextAction();
 				depthCount++;
-                if (nextAction != null) return this.Expand(currentNode, nextAction);
+                if (nextAction != null) {
+					if (depthCount > MaxSelectionDepthReached) MaxSelectionDepthReached = depthCount;
+					return this.Expand(currentNode, nextAction);
+				}
                 else currentNode = this.BestUCTChild(currentNode);
             }
 
@@ -105,23 +113,28 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         protected virtual Reward Playout(WorldModel initialPlayoutState)
         {
-			WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
-			Action[] actions = worldModel.GetExecutableActions();
+			Action[] actions = initialPlayoutState.GetExecutableActions();
+			float score = 0;
 
-			int depthCount = 0;
-			while (!worldModel.IsTerminal())
+			foreach(Action action in actions)
 			{
-				Action randomAction = actions[RandomGenerator.Next(actions.Length)];
-				randomAction.ApplyActionEffects(worldModel);
-				depthCount++;
-			}
+				WorldModel worldModel = initialPlayoutState.GenerateChildWorldModel();
+				int depthCount = 0;
+				while (!worldModel.IsTerminal())
+				{
+					Action randomAction = actions[RandomGenerator.Next(actions.Length)];
+					randomAction.ApplyActionEffects(worldModel);
+					depthCount++;
+				}
+				if (depthCount > MaxPlayoutDepthReached) MaxPlayoutDepthReached = depthCount;
 
-			if (depthCount > MaxPlayoutDepthReached) MaxPlayoutDepthReached = depthCount;
+				score += worldModel.GetScore();
+			}
 
 			return new Reward()
 			{
-				Value = worldModel.GetScore(),
-				PlayerID = worldModel.GetNextPlayer(),
+				Value = score / actions.Length,
+				PlayerID = initialPlayoutState.GetNextPlayer(),
 			};
         }
 
@@ -153,13 +166,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //gets the best child of a node, using the UCT formula
         protected virtual MCTSNode BestUCTChild(MCTSNode node)
         {
-            double best = 10000;
+            double best = float.NegativeInfinity;
             MCTSNode bestNode = null;
             if (node.ChildNodes.Count > 0) {
                 foreach (MCTSNode childnode in node.ChildNodes)
                 {
                     double currentUCTvalue = (childnode.Q / childnode.N) + C * Math.Sqrt((Math.Log(childnode.Parent.N) / childnode.N));
-                    if (currentUCTvalue < best)
+                    if (currentUCTvalue > best)
                     {
                         best = currentUCTvalue;
                         bestNode = childnode;
@@ -177,14 +190,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
         {           
-            float best = 10000;
+            float best = float.NegativeInfinity;
             MCTSNode bestNode = null;
             if (node.ChildNodes.Count > 0) {
                 foreach (MCTSNode childnode in node.ChildNodes)
                 {
                     // double currentValue = (childnode.Q / childnode.N) + Math.Sqrt((Math.Log(childnode.Parent.N) / childnode.N));
                     float currentValue = childnode.Q / childnode.N;
-                    if (currentValue < best)
+                    if (currentValue > best)
                     {
                         best = currentValue;
                         bestNode = childnode;
